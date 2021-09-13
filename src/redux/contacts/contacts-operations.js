@@ -1,54 +1,45 @@
-import {
-  fetchContactsRequest,
-  fetchContactsSuccess,
-  fetchContactsError,
-  addContactRequest,
-  addContactSuccess,
-  addContactError,
-  removeContactRequest,
-  removeContactSuccess,
-  removeContactError,
-} from "./contacts-actions";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+
 import * as contactsApi from "../../services/contacts-api";
 
-const fetchContacts = () => async (dispatch) => {
-  dispatch(fetchContactsRequest());
 
-  try {
-    const { data } = await contactsApi.fetchAllContacts();
-    console.log(data);
-    dispatch(fetchContactsSuccess(data));
-  } catch (error) {
-    dispatch(fetchContactsError(error));
-  }
-};
 
-const addContact =
-  ({ name, number }) =>
-  async (dispatch) => {
-    const contact = { name, number };
-    dispatch(addContactRequest());
-
+export const fetchContacts = createAsyncThunk(
+  'contacts/fetchContacts',
+  async (_,{ rejectWithValue }) => {
     try {
+      const { data } = await contactsApi.fetchAllContacts()
+      return data;
+    } catch (error) {
+      return rejectWithValue(error)
+    }
+  }
+)
+
+export const addContact = createAsyncThunk(
+  'contacts/addContact',
+  async ({ name, number }, { rejectWithValue }) => {
+  const contact = { name, number };
+ try {
       const { data } = await contactsApi.addNewContact(contact);
       console.log(data);
-
-      dispatch(addContactSuccess(data));
+      return data;
     } catch (error) {
-      dispatch(addContactError(error));
-    }
-  };
+      return rejectWithValue(error);
+    } 
+})
 
-const removeContact = (contactId) => async (dispatch) => {
-  dispatch(removeContactRequest());
 
-  try {
+export const removeContact = createAsyncThunk(
+  'contacts/removeContac',
+  async (contactId, { rejectWithValue }) => {
+   try {
     await contactsApi.removeContactById(contactId);
-    dispatch(removeContactSuccess(contactId));
+    return contactId;
   } catch (error) {
-    dispatch(removeContactError(error));
+     return rejectWithValue(error);
   }
-};
+})
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { fetchContacts, addContact, removeContact };
+export default { removeContact };
