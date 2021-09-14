@@ -26,3 +26,11 @@
   background-color: rgb(24, 75, 241);
   transform: scale(1.05);
 }
+
+.list{
+  margin-left: auto;
+  margin-right: auto;
+}
+.errorText{
+  text-align: center;
+}
