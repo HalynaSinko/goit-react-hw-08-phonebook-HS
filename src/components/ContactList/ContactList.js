@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {fetchContacts, removeContact} from "../../redux/contacts/contacts-operations";
+import {
+  fetchContacts,
+  removeContact,
+} from "../../redux/contacts/contacts-operations";
 import {
   getVisibleContacts,
   getFilter,
@@ -30,7 +33,8 @@ export default function ContactList() {
 
   const onRemove = (id) => dispatch(removeContact(id));
 
-  if (contacts.length === 0) return <p>No contacts by name - {filter}.</p>;
+  if (contacts.length === 0)
+    return <p className={s.errorText}>No contacts by query - "{filter}".</p>;
 
   return (
     <ul className={s.list}>

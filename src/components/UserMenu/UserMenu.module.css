@@ -1,0 +1,22 @@
+.container{
+    display: flex;
+    padding: 5px;
+    justify-content: space-between;
+    align-items: center;
+
+}
+.email{
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.button{
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid rgb(17, 14, 184);
+    font-size: inherit;
+    color: #fff;
+    background-color: rgb(17, 14, 184);;
+
+}
