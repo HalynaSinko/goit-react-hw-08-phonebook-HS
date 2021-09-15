@@ -1,24 +1,58 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import "./App.css";
+import React, { lazy, Suspense, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { Switch } from "react-router-dom";
 
-import ContactForm from "./components/ContactForm";
-import ContactList from "./components/ContactList";
-import Filter from "./components/Filter";
-import LoaderSpinner from "./components/Loader";
-import { getLoading } from "./redux/contacts/contacts-selectors";
+import Container from "./components/Container";
+import AppBar from "./components/AppBar";
+import Loader from "./components/Loader";
+import path from "./routesPath";
+import PrivateRoute from "./components/PrivateRoute";
+import PublicRoute from "./components/PublicRoute";
+import { authOperations } from "./redux/auth";
+
+const HomeView = lazy(() =>
+  import("./views/HomeView.js" /* webpackChunkName: "home-view"*/)
+);
+const RegisterView = lazy(() =>
+  import("./views/RegisterView.js" /* webpackChunkName: "register-view"*/)
+);
+const LoginView = lazy(() =>
+  import("./views/LoginView.js" /* webpackChunkName: "login-view"*/)
+);
+const ContactsView = lazy(() =>
+  import("./views/ContactsView.js" /* webpackChunkName: "contacts-view"*/)
+);
 
 export default function App() {
-  const isLoading = useSelector(getLoading);
-  return (
-    <div className="contaiter">
-      <h1>Phonebook</h1>
-      <ContactForm />
-      {isLoading && <LoaderSpinner />}
+  const dispatch = useDispatch();
 
-      <h2>Contacts</h2>
-      <Filter />
-      <ContactList />
-    </div>
+  useEffect(() => {
+    dispatch(authOperations.fetchCurrentUser());
+  }, [dispatch]);
+
+  return (
+    <Container>
+      <AppBar />
+      <Suspense fallback={<Loader />}>
+        <Switch>
+          <PublicRoute exact path={path.homeView}>
+            <HomeView />
+          </PublicRoute>
+          <PublicRoute path={path.registerView} restricted>
+            <RegisterView />
+          </PublicRoute>
+          <PublicRoute
+            path={path.loginView}
+            restricted
+            redirectTo={path.contactsView}
+          >
+            <LoginView />
+          </PublicRoute>
+          <PrivateRoute path={path.contactsView} redirectTo={path.loginView}>
+            <ContactsView />
+          </PrivateRoute>
+        </Switch>
+      </Suspense>
+    </Container>
   );
 }
